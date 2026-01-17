@@ -1,0 +1,14 @@
+{
+  "name": "NaaS GNOME Search",
+  "description": "GNOME search provider for the No-as-a-Service API",
+  "uuid": "gnome-search-no-as-a-service@vanmeeuwen.dev",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49"
+  ],
+  "version": 1,
+  "url": "https://github.com/joostvanmeeuwen/gnome-search-no-as-a-service"
+}
