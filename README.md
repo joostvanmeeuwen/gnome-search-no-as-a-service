@@ -17,3 +17,14 @@ cp -r * ~/.local/share/gnome-shell/extensions/gnome-search-no-as-a-service@vanme
 # Enable the extension
 gnome-extensions enable gnome-search-no-as-a-service@vanmeeuwen.dev
 ```
+
+## Testing
+```bash
+# Check if extension is loaded
+gnome-extensions list | grep gnome-search-no-as-a-service
+
+# View logs
+journalctl -f /usr/bin/gnome-shell | grep "NaaS"
+# or
+journalctl -f | grep -i naas
+```
