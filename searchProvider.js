@@ -65,7 +65,7 @@ export class NaasSearchProvider {
 
         return new Promise((resolve, reject) => {
             const cancelledId = cancellable.connect(
-                () => reject(Error('Operation Cancelled'))
+                () => reject(Error('Operation Cancelled')),
             );
 
             const resultMetas = [];
@@ -103,7 +103,7 @@ export class NaasSearchProvider {
 
         return new Promise((resolve, reject) => {
             const cancelledId = cancellable.connect(
-                () => reject(Error('Search Cancelled'))
+                () => reject(Error('Search Cancelled')),
             );
 
             const query = terms.join(' ').toLowerCase();

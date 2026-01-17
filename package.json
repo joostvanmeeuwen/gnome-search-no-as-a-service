@@ -1,0 +1,16 @@
+{
+  "name": "gnome-search-no-as-a-service",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "NaaS GNOME Search - Search provider for the No-as-a-Service API",
+  "private": true,
+  "scripts": {
+    "lint": "eslint *.js",
+    "lint:fix": "eslint --fix *.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.2",
+    "globals": "^15.14.0"
+  }
+}

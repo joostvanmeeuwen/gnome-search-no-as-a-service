@@ -28,3 +28,12 @@ journalctl -f /usr/bin/gnome-shell | grep "NaaS"
 # or
 journalctl -f | grep -i naas
 ```
+
+## Development
+
+```bash
+# Lint code
+npm run lint
+
+# Auto-fix linting issues
+npm run lint:fix
