@@ -106,7 +106,11 @@ export class NaasSearchProvider {
                 () => reject(Error('Search Cancelled'))
             );
 
-            const identifiers = [];
+            const query = terms.join(' ').toLowerCase();
+            const keywords = ['nee', 'no'];
+            const hasMatch = keywords.some(keyword => query.includes(keyword));
+
+            const identifiers = hasMatch ? ['excuse-1'] : [];
 
             cancellable.disconnect(cancelledId);
             if (!cancellable.is_cancelled()) {
