@@ -1,5 +1,7 @@
 # NaaS GNOME Search
 
+[![Lint](https://github.com/joostvanmeeuwen/gnome-search-no-as-a-service/actions/workflows/lint.yml/badge.svg)](https://github.com/joostvanmeeuwen/gnome-search-no-as-a-service/actions/workflows/lint.yml)
+
 A GNOME Shell search provider for the [No-as-a-Service API](https://github.com/hotheadhacker/no-as-a-service).
 
 ## Features
