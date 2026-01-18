@@ -21,6 +21,7 @@ export default [
                 C_: 'readonly',
                 N_: 'readonly',
                 ngettext: 'readonly',
+                TextDecoder: 'readonly',
             },
         },
         rules: {

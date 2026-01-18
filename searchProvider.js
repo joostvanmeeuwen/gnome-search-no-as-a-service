@@ -1,4 +1,6 @@
 import St from 'gi://St';
+import Soup from 'gi://Soup';
+import GLib from 'gi://GLib';
 
 export class NaasSearchProvider {
     constructor(extension) {
@@ -65,32 +67,50 @@ export class NaasSearchProvider {
 
         return new Promise((resolve, reject) => {
             const cancelledId = cancellable.connect(
-                () => reject(Error('Operation Cancelled')),
-            );
+                () => reject(Error('Operation Cancelled')));
 
-            const resultMetas = [];
+            const session = new Soup.Session();
+            const message = Soup.Message.new('GET', 'https://naas.isalman.dev/no');
 
-            for (const identifier of results) {
-                const meta = {
-                    id: identifier,
-                    name: 'No Excuse',
-                    description: identifier,
-                    createIcon: size => {
-                        return new St.Icon({
-                            icon_name: 'dialog-information',
-                            width: size * scaleFactor,
-                            height: size * scaleFactor,
-                        });
-                    },
-                };
+            session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, cancellable, (_session, result) => {
+                try {
+                    const bytes = session.send_and_read_finish(result);
+                    const decoder = new TextDecoder('utf-8');
+                    const text = decoder.decode(bytes.get_data());
+                    const data = JSON.parse(text);
 
-                resultMetas.push(meta);
-            }
+                    console.log('NaaS API response:', data.reason);
 
-            cancellable.disconnect(cancelledId);
-            if (!cancellable.is_cancelled()) {
-                resolve(resultMetas);
-            }
+                    const resultMetas = [];
+
+                    for (const identifier of results) {
+                        const meta = {
+                            id: identifier,
+                            name: data.reason,
+                            description: 'No-as-a-Service',
+                            clipboardText: data.reason,
+                            createIcon: size => {
+                                return new St.Icon({
+                                    icon_name: 'dialog-information',
+                                    width: size * scaleFactor,
+                                    height: size * scaleFactor,
+                                });
+                            },
+                        };
+
+                        resultMetas.push(meta);
+                    }
+
+                    cancellable.disconnect(cancelledId);
+                    if (!cancellable.is_cancelled()) {
+                        resolve(resultMetas);
+                    }
+                } catch (error) {
+                    console.error('NaaS API error:', error);
+                    cancellable.disconnect(cancelledId);
+                    reject(error);
+                }
+            });
         });
     }
 
@@ -103,8 +123,7 @@ export class NaasSearchProvider {
 
         return new Promise((resolve, reject) => {
             const cancelledId = cancellable.connect(
-                () => reject(Error('Search Cancelled')),
-            );
+                () => reject(Error('Search Cancelled')));
 
             const query = terms.join(' ').toLowerCase();
             const keywords = ['nee', 'no'];
