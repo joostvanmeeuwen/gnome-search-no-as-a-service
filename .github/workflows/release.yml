@@ -22,15 +22,10 @@ jobs:
       - name: Build extension zip
         run: |
           mkdir -p build/gnome-search-no-as-a-service@vanmeeuwen.dev
-          cp extension.js build/gnome-search-no-as-a-service@vanmeeuwen.dev/
-          cp searchProvider.js build/gnome-search-no-as-a-service@vanmeeuwen.dev/
-          cp metadata.json build/gnome-search-no-as-a-service@vanmeeuwen.dev/
-          cp README.md build/gnome-search-no-as-a-service@vanmeeuwen.dev/
-          cp LICENSE build/gnome-search-no-as-a-service@vanmeeuwen.dev/
+          cp extension.js searchProvider.js metadata.json README.md LICENSE build/gnome-search-no-as-a-service@vanmeeuwen.dev/
 
-          cd build
-          zip -r ../gnome-search-no-as-a-service@vanmeeuwen.dev.zip gnome-search-no-as-a-service@vanmeeuwen.dev
-
+          cd build/gnome-search-no-as-a-service@vanmeeuwen.dev
+          zip -r ../../gnome-search-no-as-a-service@vanmeeuwen.dev.zip .
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
