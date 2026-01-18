@@ -1,6 +1,6 @@
 {
   "name": "NaaS GNOME Search",
-  "description": "GNOME search provider for the No-as-a-Service API",
+  "description": "GNOME search provider for the No-as-a-Service API. Type 'no' or 'nee' to get creative excuses. Click or press Enter to copy to clipboard.\n\nClipboard Access: This extension copies excuse text to the system clipboard when you activate a search result.",
   "uuid": "gnome-search-no-as-a-service@vanmeeuwen.dev",
   "shell-version": [
     "45",
