@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build extension zip
+        run: |
+          mkdir -p build/gnome-search-no-as-a-service@vanmeeuwen.dev
+          cp extension.js build/gnome-search-no-as-a-service@vanmeeuwen.dev/
+          cp searchProvider.js build/gnome-search-no-as-a-service@vanmeeuwen.dev/
+          cp metadata.json build/gnome-search-no-as-a-service@vanmeeuwen.dev/
+          cp README.md build/gnome-search-no-as-a-service@vanmeeuwen.dev/
+
+          cd build
+          zip -r ../gnome-search-no-as-a-service@vanmeeuwen.dev.zip gnome-search-no-as-a-service@vanmeeuwen.dev
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: gnome-search-no-as-a-service@vanmeeuwen.dev.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
