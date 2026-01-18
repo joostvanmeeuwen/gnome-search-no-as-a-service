@@ -26,6 +26,7 @@ jobs:
           cp searchProvider.js build/gnome-search-no-as-a-service@vanmeeuwen.dev/
           cp metadata.json build/gnome-search-no-as-a-service@vanmeeuwen.dev/
           cp README.md build/gnome-search-no-as-a-service@vanmeeuwen.dev/
+          cp LICENSE build/gnome-search-no-as-a-service@vanmeeuwen.dev/
 
           cd build
           zip -r ../gnome-search-no-as-a-service@vanmeeuwen.dev.zip gnome-search-no-as-a-service@vanmeeuwen.dev
