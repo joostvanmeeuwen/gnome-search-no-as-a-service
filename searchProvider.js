@@ -84,14 +84,18 @@ export class NaasSearchProvider {
                     const resultMetas = [];
 
                     for (const identifier of results) {
+                        const truncated = data.reason.length > 40
+                            ? data.reason.substring(0, 40) + '...'
+                            : data.reason;
+
                         const meta = {
                             id: identifier,
-                            name: data.reason,
-                            description: 'No-as-a-Service',
+                            name: truncated,
+                            description: 'Click to copy full excuse',
                             clipboardText: data.reason,
                             createIcon: size => {
                                 return new St.Icon({
-                                    icon_name: 'dialog-information',
+                                    icon_name: 'action-unavailable-symbolic',
                                     width: size * scaleFactor,
                                     height: size * scaleFactor,
                                 });
