@@ -5,6 +5,8 @@ import GLib from 'gi://GLib';
 export class NaasSearchProvider {
     constructor(extension) {
         this._extension = extension;
+        this._cache = [];
+        this._maxCacheSize = 20;
     }
 
     /**
@@ -35,25 +37,16 @@ export class NaasSearchProvider {
      * Launch the search result.
      * Called when a search provider result is activated.
      */
-    activateResult(result, terms) {
-        console.log(`NaaS Search Provider: activateResult(${result}, [${terms}])`);
+    activateResult(_result, _terms) {
+        // Result activated, excuse copied to clipboard
     }
 
     /**
      * Launch the search provider.
      * Called when a search provider is activated.
      */
-    launchSearch(terms) {
-        console.log(`NaaS Search Provider: launchSearch([${terms}])`);
-    }
-
-    /**
-     * Create a result object.
-     * Return null for default implementation.
-     */
-    createResultObject(meta) {
-        console.log(`NaaS Search Provider: createResultObject(${meta.id})`);
-        return null;
+    launchSearch(_terms) {
+        // Not implemented - no separate app to launch
     }
 
     /**
@@ -61,8 +54,6 @@ export class NaasSearchProvider {
      * Returns a ResultMeta object for each identifier.
      */
     async getResultMetas(results, cancellable) {
-        console.log(`NaaS Search Provider: getResultMetas([${results}])`);
-
         const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
 
         return new Promise((resolve, reject) => {
@@ -79,31 +70,10 @@ export class NaasSearchProvider {
                     const text = decoder.decode(bytes.get_data());
                     const data = JSON.parse(text);
 
-                    console.log('NaaS API response:', data.reason);
+                    const excuse = data.reason;
+                    this._addToCache(excuse);
 
-                    const resultMetas = [];
-
-                    for (const identifier of results) {
-                        const truncated = data.reason.length > 40
-                            ? data.reason.substring(0, 40) + '...'
-                            : data.reason;
-
-                        const meta = {
-                            id: identifier,
-                            name: truncated,
-                            description: 'Click to copy full excuse',
-                            clipboardText: data.reason,
-                            createIcon: size => {
-                                return new St.Icon({
-                                    icon_name: 'action-unavailable-symbolic',
-                                    width: size * scaleFactor,
-                                    height: size * scaleFactor,
-                                });
-                            },
-                        };
-
-                        resultMetas.push(meta);
-                    }
+                    const resultMetas = this._createResultMeta(results, excuse, scaleFactor);
 
                     cancellable.disconnect(cancelledId);
                     if (!cancellable.is_cancelled()) {
@@ -112,10 +82,51 @@ export class NaasSearchProvider {
                 } catch (error) {
                     console.error('NaaS API error:', error);
                     cancellable.disconnect(cancelledId);
-                    reject(error);
+
+                    if (this._cache.length > 0) {
+                        const randomExcuse = this._cache[Math.floor(Math.random() * this._cache.length)];
+                        const resultMetas = this._createResultMeta(results, randomExcuse, scaleFactor);
+                        resolve(resultMetas);
+                    } else {
+                        reject(error);
+                    }
                 }
             });
         });
+    }
+
+    _createResultMeta(results, excuse, scaleFactor) {
+        const resultMetas = [];
+
+        for (const identifier of results) {
+            const meta = {
+                id: identifier,
+                name: excuse,
+                description: 'Click or press Enter to copy full excuse',
+                clipboardText: excuse,
+                createIcon: size => {
+                    return new St.Icon({
+                        icon_name: 'action-unavailable-symbolic',
+                        width: size * scaleFactor,
+                        height: size * scaleFactor,
+                    });
+                },
+            };
+
+            resultMetas.push(meta);
+        }
+
+        return resultMetas;
+    }
+
+    _addToCache(excuse) {
+        if (!this._cache.includes(excuse)) {
+            this._cache.push(excuse);
+
+            if (this._cache.length > this._maxCacheSize) {
+                this._cache.shift();
+            }
+        }
     }
 
     /**
@@ -123,8 +134,6 @@ export class NaasSearchProvider {
      * Returns a list of unique identifiers for the results.
      */
     async getInitialResultSet(terms, cancellable) {
-        console.log(`NaaS Search Provider: getInitialResultSet([${terms}])`);
-
         return new Promise((resolve, reject) => {
             const cancelledId = cancellable.connect(
                 () => reject(Error('Search Cancelled')));
@@ -147,8 +156,6 @@ export class NaasSearchProvider {
      * Returns a subset of the original result set.
      */
     async getSubsearchResultSet(results, terms, cancellable) {
-        console.log(`NaaS Search Provider: getSubsearchResultSet([${results}], [${terms}])`);
-
         if (cancellable.is_cancelled()) {
             throw Error('Search Cancelled');
         }
@@ -161,8 +168,6 @@ export class NaasSearchProvider {
      * Truncate the number of search results.
      */
     filterResults(results, maxResults) {
-        console.log(`NaaS Search Provider: filterResults([${results}], ${maxResults})`);
-
         if (results.length <= maxResults) {
             return results;
         }
